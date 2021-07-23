@@ -7,7 +7,6 @@ function editNav() {
   }
 }
 
-
 // DOM Elements
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
@@ -21,6 +20,7 @@ const first = document.getElementById("first");
 const last = document.getElementById("last");
 const email = document.getElementById("email");
 const birthdate = document.getElementById("birthdate");
+const quantity = document.getElementById("quantity");
 const textControl = document.querySelectorAll(".text-control");
 const checkBoxCdg = document.getElementById("checkbox1");
 const checkboxVide = document.getElementById("checkbox-vide");
@@ -36,7 +36,7 @@ function launchModal() {
 }
 
 // Close modal form
-function closeModal () {
+function closeModal() {
   modalbg.style.display = "none";
 }
 close.addEventListener("click", closeModal);
@@ -52,24 +52,24 @@ let errorsLists = [
   "Veuillez-sélectionner une date de naissance valide.",
   "<br> Vous devez choisir une option.",
   "<br>Vous devez vérifier que vous acceptez les termes et conditions.",
+  "Merci de renseigner un nombre entre 0 et 99",
 ];
 
 // Vérification du formulaire
 document.getElementById("registration-form").addEventListener("submit", (e) => {
-
   // Initialisation d'une variable pour la soumission du formulaire
   let error;
 
   // Regex pour vérification saisie dans les inputs
-  let regexName = /^[a-zA-Z-\s]+$/;
-  let regexMail = /^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$/;
+  let regexName = /^[a-zéèêîï']+[ -]?[a-zéèêîï']*$/i;
+  let regexMail = /^[\w\._-]+@[\w-]{2,}\.[a-z]{2,4}$/;
   let regexBirthdate =
     /^((19[3-9]+[0-9]|200[0-9])-(0?[1-9]|1[0-2])-(0?[1-9]|[12]\d|3[01])|(0?[1-9]|[12]\d|3[01])[/](0?[1-9]|1[0-2])[/](19[3-9]+[0-9]|200[0-6]))$/;
 
   // On appel tous les formulaires avec une zone de texte
   for (let i = 0; i < textControl.length; i++) {
     // On vérifie que les formulaires ne soit pas vide
-    if (textControl[i].value == "") {
+    if (textControl[i].value === "") {
       error = true;
       errorWhiteSpace.innerHTML = errorsLists[0];
       errorWhiteSpace.style.fontSize = "16px";
@@ -103,7 +103,7 @@ document.getElementById("registration-form").addEventListener("submit", (e) => {
     }
 
     // On vérifie que le mail saisie soit correct
-    if (regexMail.test(email.value) == false && email.value == "") {
+    if (regexMail.test(email.value) == false || email.value == "") {
       const errorMail = document.getElementById("errorMail");
       error = true;
       errorMail.textContent = errorsLists[5];
@@ -121,12 +121,21 @@ document.getElementById("registration-form").addEventListener("submit", (e) => {
     }
   }
 
+  // On vérifie que le nombre saisie est valide
+  let participation = Number(quantity.value);
+  if (participation < 0 || participation > 99) {
+    const errorQuantity = document.getElementById("errorQuantity");
+    error = true;
+    errorQuantity.textContent = errorsLists[9];
+  } else {
+    errorQuantity.textContent = "";
+  }
+
   // On vérifie que l'une des checkbox de localisation soit coché
   let valid = false;
   for (let i = 0; i < locations.length; i++) {
     if (locations[i].checked) {
       valid = true;
-      break;
     }
   }
 
@@ -152,18 +161,16 @@ document.getElementById("registration-form").addEventListener("submit", (e) => {
   if (error) {
     e.preventDefault();
     return false;
-  }else{// si le dossier est validé, on affiche le message de validation du formulaire
+  } else {
+    // si le dossier est validé, on affiche le message de validation du formulaire
     e.preventDefault();
     form.style.display = "none";
     validationContainer.style.display = "block";
     modalBody.classList.add("validation");
-    modalbg.style.display = "block";
-    
   }
-    
+
   // Envoie du formulaire
   document.querySelector(".btn-close-form").addEventListener("click", () => {
     form.submit();
   });
-  
 });
